@@ -1,6 +1,7 @@
 var alphabet;
 var hiragana;
 var katakana;
+var les2 = [];
 function getAlphabet() {
     var xhttp = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"); 
     xhttp.onreadystatechange = function() {
@@ -10,11 +11,13 @@ function getAlphabet() {
             for (var i in alphabet) {
             	if (i === "hiragana") {
             		hiragana = Object.keys(alphabet[i]);
+					les2 = les2.concat(hiragana);
             	}
             	if (i === "katakana") {
             		katakana = Object.keys(alphabet[i]);
+					les2 = les2.concat(katakana);
             	}
-               //console.log("taille : "+Object.keys(alphabet[i]));
+				//console.log("taille : "+Object.keys(alphabet[i]));
             }
             //console.log("h "+hiragana.length);
             //console.log("k "+katakana.length);
@@ -27,7 +30,7 @@ function getAlphabet() {
 }
 
 function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
+	return Math.floor(Math.random() * Math.floor(max));
 }
 
 
@@ -37,6 +40,8 @@ function tirageAleatoire(max) {
 		alpha = hiragana;
 	} else if(max === katakana.length) {
 		alpha = katakana;
+	} else if (max === les2.length) {
+		alpha = les2;
 	} else {
 		return;
 	}
@@ -54,6 +59,8 @@ function tirageAleatoire(max) {
 	send3data.push(alpha[tirage3]);
 	return(send3data);
 	//console.log(send3data);
+	
+	//hiragana.length =74 + katakana.length =78);
 }
 
 function afficheLettre() {
@@ -73,27 +80,59 @@ function afficheLettre() {
 			radGlyphe = bouton[i].value;
 		}
 	}
-	
-	console.log("radJeu : "+radJeu+" | radGlyphe : "+radGlyphe);
-	
-	
-	//<label><input type="radio" name="radJeu" value="syllabes" checked> les syllabes</label>
-	
-	var alplhabetLength = 74;
-	
-	var lettre = tirageAleatoire(alplhabetLength);
-	var tailleLettre = lettre.length;
-	var lettreATrouver = getRandomInt(tailleLettre);
-	var affiche = document.getElementById("affichage");
-	affiche.innerHTML = lettre[lettreATrouver];
-	var choix = document.getElementById("choix");
-	var tmp = "";
-	for (var i = 0; i < tailleLettre; i++) {
-		//<div>i<br><span class="solution">&#12356;</span></div>
-		tmp += "<div>&#"+alphabet["katakana"][lettre[i]]+"</div>";
+	var alplhabetLength = 0;
+	if (radGlyphe === "katakana") {
+		alplhabetLength = katakana.length;
+		//console.log(alplhabetLength);
+	} else if (radGlyphe === "hiragana") {
+		alplhabetLength = hiragana.length;
+		//console.log(alplhabetLength);
+	} else if (radGlyphe === "les2") {
+		alplhabetLength = hiragana.length + katakana.length;
+		//console.log(alplhabetLength);
+	} else {
+		console.log("error");
 	}
-	//console.log(tmp);
-	choix.innerHTML = tmp;
+	
+	if (radJeu === "syllabes") {
+		console.log("syllabes");
+		var lettre = tirageAleatoire(alplhabetLength);
+		//console.log(lettre);
+		var tailleLettre = lettre.length;
+		var lettreATrouver = getRandomInt(tailleLettre);
+		var affiche = document.getElementById("affichage");
+		affiche.innerHTML = lettre[lettreATrouver];
+		var choix = document.getElementById("choix");
+		var tmp = "";
+		for (var i = 0; i < tailleLettre; i++) {
+			//<div>i<br><span class="solution">&#12356;</span></div>
+			tmp += "<div>&#"+alphabet[radGlyphe][lettre[i]]+"</div>";
+		}
+		//console.log(tmp);
+		choix.innerHTML = tmp;
+	} else if (radJeu === "caracteres") {
+		//console.log("caracteres");
+		var lettre = tirageAleatoire(alplhabetLength);
+		console.log(lettre);
+		var tailleLettre = lettre.length;
+		var lettreATrouver = getRandomInt(tailleLettre);
+		var affiche = document.getElementById("affichage");
+		affiche.innerHTML = "&#"+alphabet[radGlyphe][lettre[lettreATrouver]];
+		var choix = document.getElementById("choix");
+		var tmp = "";
+		for (var i = 0; i < tailleLettre; i++) {
+			//<div>i<br><span class="solution">&#12356;</span></div>
+			tmp += "<div>"+[lettre[i]]+"</div>";
+		}
+		//console.log(tmp);
+		choix.innerHTML = tmp;
+	} else {
+		console.log("Error");
+	}
+	
+	
+	
+	
 }
 
 
