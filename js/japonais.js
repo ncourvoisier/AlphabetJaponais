@@ -3,7 +3,7 @@ var hiragana;
 var katakana;
 var les2 = [];
 function getAlphabet() {
-    var xhttp = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"); 
+	var xhttp = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"); 
     xhttp.onreadystatechange = function() {
     	if (this.readyState == 4 && this.status == 200) {
             alphabet = JSON.parse(this.responseText);
@@ -17,10 +17,7 @@ function getAlphabet() {
             		katakana = Object.keys(alphabet[i]);
 					les2 = les2.concat(katakana);
             	}
-				//console.log("taille : "+Object.keys(alphabet[i]));
             }
-            //console.log("h "+hiragana.length);
-            //console.log("k "+katakana.length);
         }
     }
     xhttp.open("get", "./js/alphabet.json", true);
@@ -58,86 +55,218 @@ function tirageAleatoire(max) {
 	}while(tirage1 === tirage3 || tirage2 === tirage3);
 	send3data.push(alpha[tirage3]);
 	return(send3data);
-	//console.log(send3data);
-	
-	//hiragana.length =74 + katakana.length =78);
 }
+
+function reponse0() {
+	reponseJoueur = 0;
+	solution();
+	
+}
+
+function reponse1() {
+	reponseJoueur = 1;
+	solution();
+}
+function reponse2() {
+	reponseJoueur = 2;
+	solution();
+}
+
+function jeu() {
+	getAlphabet();
+	var x = setTimeout(afficheLettre,1);
+}
+
+var cl = 0;
+function rejouer() {
+	if (cl === 0) {
+		cl++
+		return;
+	}
+	if (cl === 1) {
+		cl = 0;
+		tiragePrecedent = tirage;
+		lettrePrecedente = reponseLettre;
+		afficheLettre();
+	}
+}
+
+
+function solution() {
+	if(radJeu === "syllabes") {
+		var tmp = "";
+		var choix = document.getElementById("choix"); 
+		for (var i = 0, c = tirage.length; i < c; i++) {
+			if (i === reponseLettre) {
+				tmp += "<div id=\"reponse"+i+"\">&#"+alphabet[radGlyphe][tirage[i]]+"</div>";
+				continue;
+			}
+			tmp += "<div id=\"reponse"+i+"\">&#"+alphabet[radGlyphe][tirage[i]]+"<br><span class=\"solution\">"+[tirage[i]]+"</div>";
+		}
+		choix.innerHTML = tmp;
+	} else if (radJeu === "caracteres") {
+		var tmp = "";
+		var choix = document.getElementById("choix"); 
+		for (var i = 0, c = tirage.length; i < c; i++) {
+			if (i === reponseLettre) {
+				tmp += "<div>"+[tirage[i]]+"</div>";
+				continue;
+			}
+			tmp += "<div>"+[tirage[i]]+"<br><span class=\"solution\">&#"+alphabet[radGlyphe][tirage[i]]+"</div>";
+		}
+		choix.innerHTML = tmp;
+	}
+	if (reponseJoueur === reponseLettre) {
+		var elmt = document.getElementById("choix");
+		elmt.style.color = "darkgreen";
+		nombreDePartieSurSessions++;
+		nombreDePartieGagneSurSessions++;
+		restoredSession[0]++;
+		restoredSession[1]++;
+	} else {
+		var elmt = document.getElementById("choix");
+		elmt.style.color = "red";
+		nombreDePartieSurSessions++;
+		restoredSession[1]++;
+	}
+	
+	var p = document.getElementsByTagName("body");
+	p.onclick = rejouer;
+}
+
+var nombreDePartieSurSessions = 0;
+var nombreDePartieGagneSurSessions = 0;
+var tirage = [];
+var tiragePrecedent = [];
+var reponseLettre = "";
+var lettrePrecedente = "";
+var radJeu = "";
+var radGlyphe = "";
+var reponseJoueur = "";
+
+function reset() {
+	restoredSession[0] = 0;
+	restoredSession[1] = 0;
+	nombreDePartieGagneSurSessions = 0;
+	nombreDePartieSurSessions = 0;
+	return;
+}
+
+var restoredSession = JSON.parse(localStorage.getItem('global'));
+if (restoredSession === null) {
+	restoredSession = [];
+	restoredSession[0] = 0;
+	restoredSession[1] = 0;
+}
+if (restoredSession[0] !== 0 && restoredSession[1] !== 0) {
+	var tmpSession = restoredSession;
+}
+
+//A TERMINER
+function prefixeSuffixe() {
+	var resRegExp = [];
+	var incrResRegExp = 0;
+	for (var i = 0, c = document.getElementsByTagName("input").length; i < c; i++) {
+		var inpt = document.getElementsByTagName("input");
+		if (inpt[i].name === "radJeu" || inpt[i].name === "radGlyphe" || inpt[i].id === "cbOptions" || inpt[i].value === "[aiueon]") {
+			continue;
+		}
+		if (inpt[i].checked) {
+			console.log(inpt[i].value);
+			resRegExp[incrResRegExp] = inpt[i].value;
+			incrResRegExp++;
+		}
+	}
+	console.log("test "+radGlyphe+" fin");
+	if (radGlyphe === "hiragana") {
+		console.log("test "+radGlyphe);
+		for (var i = 0, c = hiragana.length; i < c; i++) {
+			console.log(hiragana[i].match(resRegExp[0]));
+		}
+	}
+	
+	
+}
+
+
 
 function afficheLettre() {
 	
 	var bouton = document.getElementsByTagName("input");
-	var radJeu = "";
-	var radGlyphe = "";
 	for(var i = 0, c = bouton.length; i < c; i++){
-		//console.log(bouton[i]);
-		//console.log(bouton[i].name);
 		if (bouton[i].name === "radJeu" && bouton[i].checked) {
-			//console.log(bouton[i].value+" : "+bouton[i].checked);
 			radJeu = bouton[i].value;
 		}
 		if (bouton[i].name === "radGlyphe" && bouton[i].checked) {
-			//console.log(bouton[i].value+" : "+bouton[i].checked);
 			radGlyphe = bouton[i].value;
 		}
 	}
 	var alplhabetLength = 0;
 	if (radGlyphe === "katakana") {
 		alplhabetLength = katakana.length;
-		//console.log(alplhabetLength);
 	} else if (radGlyphe === "hiragana") {
 		alplhabetLength = hiragana.length;
-		//console.log(alplhabetLength);
 	} else if (radGlyphe === "les2") {
 		alplhabetLength = hiragana.length + katakana.length;
-		//console.log(alplhabetLength);
 	} else {
 		console.log("error");
 	}
 	
+	prefixeSuffixe();
+	
 	if (radJeu === "syllabes") {
-		console.log("syllabes");
 		var lettre = tirageAleatoire(alplhabetLength);
-		//console.log(lettre);
+		tirage = lettre;
 		var tailleLettre = lettre.length;
-		var lettreATrouver = getRandomInt(tailleLettre);
+		var lettreATrouver = "";
+		do{
+			lettreATrouver = getRandomInt(tailleLettre);
+		}while(lettre[lettreATrouver] === tiragePrecedent[0] || lettre[lettreATrouver] === tiragePrecedent[1] || lettre[lettreATrouver] === tiragePrecedent[2]);
+		reponseLettre = lettreATrouver;
 		var affiche = document.getElementById("affichage");
 		affiche.innerHTML = lettre[lettreATrouver];
 		var choix = document.getElementById("choix");
 		var tmp = "";
 		for (var i = 0; i < tailleLettre; i++) {
-			//<div>i<br><span class="solution">&#12356;</span></div>
-			tmp += "<div>&#"+alphabet[radGlyphe][lettre[i]]+"</div>";
+			tmp += "<div onclick=\"reponse"+i+"()\">&#"+alphabet[radGlyphe][lettre[i]]+"</div>";
 		}
-		//console.log(tmp);
 		choix.innerHTML = tmp;
+		var elmt = document.getElementById("choix");
+		elmt.style.color = "#000000";
 	} else if (radJeu === "caracteres") {
-		//console.log("caracteres");
 		var lettre = tirageAleatoire(alplhabetLength);
-		console.log(lettre);
+		tirage = lettre;
 		var tailleLettre = lettre.length;
 		var lettreATrouver = getRandomInt(tailleLettre);
+		reponseLettre = lettreATrouver;
 		var affiche = document.getElementById("affichage");
 		affiche.innerHTML = "&#"+alphabet[radGlyphe][lettre[lettreATrouver]];
 		var choix = document.getElementById("choix");
 		var tmp = "";
 		for (var i = 0; i < tailleLettre; i++) {
-			//<div>i<br><span class="solution">&#12356;</span></div>
-			tmp += "<div>"+[lettre[i]]+"</div>";
+			tmp += "<div onclick=\"reponse"+i+"()\">"+[lettre[i]]+"</div>";
 		}
-		//console.log(tmp);
 		choix.innerHTML = tmp;
+		var elmt = document.getElementById("choix");
+		elmt.style.color = "#000000";
 	} else {
 		console.log("Error");
 	}
 	
+	var restoredTable = JSON.parse(localStorage.getItem('infoSession'));
+	var score = document.getElementById("scores");
+	var ratioSession = Math.floor(nombreDePartieGagneSurSessions / nombreDePartieSurSessions * 100);
+	if (!ratioSession) {
+		ratioSession = 0;
+	}
+	var ratioGlobal = Math.floor(restoredSession[0] / restoredSession[1] * 100);
+	if (!ratioGlobal) {
+		ratioGlobal = 0;
+	}
+	score.innerHTML = "Session : "+nombreDePartieGagneSurSessions+"/"+nombreDePartieSurSessions+" ("+ratioSession+"%) -- Global : "+restoredSession[0]+"/"+restoredSession[1]+" ("+ratioGlobal+"%)";
 	
-	
-	
+	localStorage.setItem('global', JSON.stringify(restoredSession));
 }
-
-
-
-
 
 
 

@@ -13,7 +13,7 @@
     <script src="js/japonais.js"></script>
 </head>
 
-<body onload="getAlphabet()">
+<body onload="jeu()" onclick="rejouer()">
 
     <input type="checkbox" id="cbOptions" hidden>
 
@@ -78,7 +78,7 @@
         </div>
         
        <div>
-           <div id="btnReinit" class="bouton">Réinitialiser les scores</div>
+           <div id="btnReinit" class="bouton" onclick="reset()">Réinitialiser les scores</div>
            <label for="cbOptions" class="bouton">Fermer</label>
         </div>
     </form>
