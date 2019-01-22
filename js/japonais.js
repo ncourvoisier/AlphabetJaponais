@@ -39,9 +39,12 @@ function tirageAleatoire(max) {
 		alpha = katakana;
 	} else if (max === les2.length) {
 		alpha = les2;
+	} else if (max === tableauCaractere.length) {
+		alpha = tableauCaractere;
 	} else {
 		return;
 	}
+	
 	var send3data = [];
 	var tirage1, tirage2, tirage3;
 	tirage1 = getRandomInt(max);
@@ -143,6 +146,7 @@ var lettrePrecedente = "";
 var radJeu = "";
 var radGlyphe = "";
 var reponseJoueur = "";
+var tableauCaractere = [];
 
 function reset() {
 	restoredSession[0] = 0;
@@ -166,26 +170,40 @@ if (restoredSession[0] !== 0 && restoredSession[1] !== 0) {
 function prefixeSuffixe() {
 	var resRegExp = [];
 	var incrResRegExp = 0;
-	for (var i = 0, c = document.getElementsByTagName("input").length; i < c; i++) {
-		var inpt = document.getElementsByTagName("input");
+	var inpt = document.getElementsByTagName("input");
+	for (var i = 0, c = inpt.length; i < c; i++) {
 		if (inpt[i].name === "radJeu" || inpt[i].name === "radGlyphe" || inpt[i].id === "cbOptions" || inpt[i].value === "[aiueon]") {
 			continue;
 		}
 		if (inpt[i].checked) {
-			console.log(inpt[i].value);
 			resRegExp[incrResRegExp] = inpt[i].value;
 			incrResRegExp++;
 		}
 	}
-	console.log("test "+radGlyphe+" fin");
-	if (radGlyphe === "hiragana") {
-		console.log("test "+radGlyphe);
-		for (var i = 0, c = hiragana.length; i < c; i++) {
-			console.log(hiragana[i].match(resRegExp[0]));
-		}
+	
+	if (resRegExp.length === 0) {
+		tableauCaractere = [];
+		return;
 	}
 	
+	var inc = 0;
 	
+	if (radGlyphe === "hiragana") {
+		for (var j = 0, z = resRegExp.length; j < z; j++) {
+			for (var i = 0, c = hiragana.length; i < c; i++) {
+				//console.log(j);
+				var res = hiragana[i].match(resRegExp[j]);
+				if (res !== null) {
+					//console.log(res+" : "+i);
+					//send3data.push(alpha[tirage3]);
+					tableauCaractere[inc] = res;
+					inc++;
+				}
+			}
+		}
+	
+	}
+	//console.log(tableauCaractere);
 }
 
 
@@ -213,6 +231,10 @@ function afficheLettre() {
 	}
 	
 	prefixeSuffixe();
+	
+	if (tableauCaractere.length !== 0) {
+		alplhabetLength = tableauCaractere.length;
+	}
 	
 	if (radJeu === "syllabes") {
 		var lettre = tirageAleatoire(alplhabetLength);
